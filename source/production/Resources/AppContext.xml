@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="dataSource"
+          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+
+        <property name="driverClassName" value="org.hsqldb.jdbc.JDBCDriver"/>
+        <property name="url" value="jdbc:hsqldb:hsql://localhost/cpsc476"/>
+        <property name="username" value="SA"/>
+        <property name="password" value="Passw0rd"/>
+    </bean>
+
+    <bean id="userDAO" class="com.DAO.UserDaoImpl">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <bean id="eventDao" class="com.DAO.EventDaoImpl">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <bean id="followingDao" class="com.DAO.FollowingDaoImpl">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+</beans>
