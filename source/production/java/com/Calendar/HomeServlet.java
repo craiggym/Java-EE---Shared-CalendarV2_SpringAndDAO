@@ -26,11 +26,8 @@ public class HomeServlet extends HttpServlet
     private static int idCount = 0;
     private static final Map<String, String> userDatabase = new Hashtable<>();
     boolean debug = true;
-
-    static {
-        userDatabase.put("test", "t3st");
-        userDatabase.put("a", "aa");
-    }
+    private static String appContextFile = "AppContext.xml"; // Use the settings from this xml file
+    private static ConfigurableApplicationContext context = new ClassPathXmlApplicationContext("AppContext.xml");
 
     /*****************************************************
      * doPost Method
@@ -65,9 +62,6 @@ public class HomeServlet extends HttpServlet
 
         switch(action)
         {
-            case "userAdd":
-                this.userAdd(request, response);
-                break;
             case "login":
                 this.login(request, response);
                 break;
@@ -85,26 +79,22 @@ public class HomeServlet extends HttpServlet
     }
 
     private void login(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String username=request.getParameter("user");
-        String password=request.getParameter("pass");
-        if(username == null || password == null ||
-                !HomeServlet.userDatabase.containsKey(username) ||
-                !password.equals(HomeServlet.userDatabase.get(username)))
-        {
-            if(!HomeServlet.userDatabase.containsKey(username) ||
-                    !password.equals(HomeServlet.userDatabase.get(username)))
-                request.getRequestDispatcher("/WEB-INF/jsp/view/browseIncorrect.jsp")
-                        .forward(request, response);
+        String username=request.getParameter("username");
+        String password=request.getParameter("password");
+        HttpSession session = request.getSession(true);
+        UserDao user = (UserDao) context.getBean("userDao");
 
-            request.getRequestDispatcher("/WEB-INF/jsp/view/browse.jsp")
+        session.setAttribute("auth", "true");
+        if(user.isAuthCorrect(username, password)) // authenticate through database
+        {
+            request.getRequestDispatcher("/WEB-INF/jsp/view/welcome.jsp")
                     .forward(request, response);
         }
         else
         {
-            HttpSession session = request.getSession(true);
-            String id=session.getId();
-            session.setAttribute("username",username);
-            response.sendRedirect("event");
+            session.setAttribute("auth","false");
+            request.getRequestDispatcher("/WEB-INF/jsp/view/browse.jsp")
+                    .forward(request, response);
         }
     }
     /*********************************************************
@@ -158,24 +148,11 @@ public class HomeServlet extends HttpServlet
     private void goHome(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        //request.setAttribute("Created",EventServlet.Created);
+        HttpSession session = request.getSession(true);
+        session.setAttribute("auth", "true");
+
         request.setAttribute("allEvents",EventServlet.eventDatabase);
         request.getRequestDispatcher("/WEB-INF/jsp/view/browse.jsp")
                 .forward(request, response);
-    }
-
-    /*********************************************************************
-     * Title: userAdd
-     * Description: Adds user to "database"
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
-     ***********************************************************************/
-    private void userAdd(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException
-    {
-
-
     }
 }

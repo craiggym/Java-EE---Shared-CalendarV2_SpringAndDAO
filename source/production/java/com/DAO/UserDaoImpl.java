@@ -60,14 +60,33 @@ public class UserDaoImpl implements UserDao{
             Object[] input = new Object[]{username};
             jdbcTemplate = new JdbcTemplate(dataSource);
             String uname = (String) jdbcTemplate.queryForObject(query, input, String.class);
-            System.out.println("result of query: "+uname);
-            if (debug) System.out.println("User exists");
+
+            if(debug) {
+                System.out.println("result of query: " + uname);
+                System.out.println("User exists");
+            }
             return true;
         }
         catch(Exception e){
             if (debug) System.out.println("User does not exist");
             return false;
         }
+    }
 
+    @Override
+    public boolean isAuthCorrect(String username, String password) {
+        try {
+            String query = "SELECT username FROM User WHERE username=?" + " AND password=?";
+            Object[] input = new Object[]{username,password};
+            jdbcTemplate = new JdbcTemplate(dataSource);
+            String q_result = (String) jdbcTemplate.queryForObject(query, input, String.class);
+
+            if(debug)System.out.println("Authentication for " + q_result + " correct!");
+            return true;
+        }
+        catch(Exception e){
+            if (debug) System.out.println("Authentication incorrect");
+            return false;
+        }
     }
 }

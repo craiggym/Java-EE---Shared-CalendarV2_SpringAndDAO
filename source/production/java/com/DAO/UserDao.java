@@ -8,4 +8,5 @@ public interface UserDao {
     void insertUser(User user);
     String selectUser(int id);
     boolean userExists(String username);
+    boolean isAuthCorrect(String username, String password);
 }

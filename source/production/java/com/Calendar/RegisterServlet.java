@@ -24,6 +24,7 @@ public class RegisterServlet extends HttpServlet {
     // Variables //
     int idCount=0;
     boolean debug=true;
+    private static String appContextFile = "AppContext.xml"; // Use the settings from this xml file
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         addUser(request,response);
@@ -62,22 +63,21 @@ public class RegisterServlet extends HttpServlet {
     private void addUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        String acFile = "AppContext.xml"; // Use the settings from this xml file
-        ConfigurableApplicationContext context = new ClassPathXmlApplicationContext(acFile); // New AppContext pointing to xml config
+        ConfigurableApplicationContext context = new ClassPathXmlApplicationContext(appContextFile); // New AppContext pointing to xml config
         UserDao userDao = (UserDao) context.getBean("userDao");
+        HttpSession session = request.getSession(true);
 
-        try {
-            if (idCount == 0) { // Fresh instance of web application
-                userDao.dropUserTable(); // Drop the user table to prevent duplicate userIDs
+        try { // catch occurs when HSQLDB is not established
+            if (idCount == 0) { // Fresh instance of web application means to clear out the data and re-establish tables
+                userDao.dropUserTable();
                 if (debug) System.out.println("User table Dropped");
-                userDao.createUserTable(); // Create new instance of the user table
+                userDao.createUserTable();
                 if (debug) System.out.println("User table created");
             }
 
             // First check if username is unique otherwise throw fail
             String username = request.getParameter("username");
             if (!userDao.userExists(username)) { //User doesn't exist. Proceed with user add:
-
                 // Take rest of parameters from form and set them in local variables //
                 String e_mail = request.getParameter("e_mail");
                 String pass = request.getParameter("pass");
@@ -96,10 +96,10 @@ public class RegisterServlet extends HttpServlet {
                 userDao.insertUser(user); // Inserts the user into HSQLDB table
                 if (debug) System.out.println("\nAdded user: " + userDao.selectUser(idCount - 1)); // Check database
 
+                session.setAttribute("duplicate", "false");
                 request.getRequestDispatcher("/WEB-INF/jsp/view/registerSuccess.jsp")
                         .forward(request, response);
-            } else {
-                HttpSession session = request.getSession(true);
+            } else { // Username exists in the database
                 session.setAttribute("duplicate", "true");
 
                 request.getRequestDispatcher("/WEB-INF/jsp/view/register.jsp")
