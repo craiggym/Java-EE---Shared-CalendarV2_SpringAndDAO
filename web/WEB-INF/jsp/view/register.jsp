@@ -10,7 +10,6 @@
 <html>
 <head>
     <title>Register</title>
-    <link rel="stylesheet" type="text/css" href="styles/styles.css"/>
 </head>
 <body>
     <h1>Sign up while it's free!</h1>
@@ -19,9 +18,17 @@
     <form action="register" method="POST">
         <fieldset>
             <legend><em>Personal Information</em></legend><br/>
-            <label>First name: </label><span> <input type="text" name="fname"></span>
+            <label for="username">Username: </label><span> <input type="text" id="username" name="username"></span>
             <br/><br/>
-            <label>Last name: </label> <span> <input type="text" name="pass"></span>
+            <label for="pass">Password: </label> <span> <input type="password" id="pass" name="pass"></span>
+            <br/><br/>
+            <label for="pass2">Password (again): </label> <span> <input type="password" id="pass2" name="pass2"></span>
+            <br/><br/>
+            <label for="e_mail">E-mail: </label> <span> <input type="email" id="e_mail" name="e_mail"></span>
+            <br/><br/>
+            <label for="fname">First name: </label><span> <input type="text" id="fname" name="fname"></span>
+            <br/><br/>
+            <label for="lname">Last name: </label> <span> <input type="text" id="lname" name="lname"></span>
                 <br/><br/>
                 <input type="submit" value="Submit">
         </fieldset>

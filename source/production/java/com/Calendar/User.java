@@ -3,6 +3,8 @@ package com.Calendar;
 public class User {
     private String username;
     private String e_mail;
+    private String password;
+    private String first_name;
     private String last_name;
     private int userID;
 
@@ -20,6 +22,22 @@ public class User {
 
     public void setE_mail(String e_mail) {
         this.e_mail = e_mail;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getFirst_name() {
+        return first_name;
+    }
+
+    public void setFirst_name(String first_name) {
+        this.first_name = first_name;
     }
 
     public String getLast_name() {

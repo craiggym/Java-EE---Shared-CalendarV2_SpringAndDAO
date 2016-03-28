@@ -8,6 +8,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.*;
+//Added for proj 2//
+import com.DAO.UserDao;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.support.JdbcDaoSupport;
+
 
 @WebServlet(
         name = "HomeServlet",
@@ -15,7 +22,10 @@ import java.util.*;
 )
 public class HomeServlet extends HttpServlet
 {
+    // Variables //
+    private static int idCount = 0;
     private static final Map<String, String> userDatabase = new Hashtable<>();
+    boolean debug = true;
 
     static {
         userDatabase.put("test", "t3st");
@@ -165,18 +175,37 @@ public class HomeServlet extends HttpServlet
     private void userAdd(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        String fname = request.getParameter("fname");
+        // Take parameters from form and set them in local variables //
+        String username = request.getParameter("username");
+        String e_mail = request.getParameter("e_mail");
         String pass = request.getParameter("pass");
+        String fname = request.getParameter("fname");
+        String lname = request.getParameter("lname");
 
-        if(HomeServlet.userDatabase.containsKey(fname.toString())){
-            request.getRequestDispatcher("/WEB-INF/jsp/view/registerFail.jsp")
-                    .forward(request, response);
-        }
-        else {
-            HomeServlet.userDatabase.put(fname, pass);
+        String acFile = "AppContext.xml"; // Use the settings from this xml file
+        ConfigurableApplicationContext context = new ClassPathXmlApplicationContext(acFile); // New AppContext pointing to xml config
+        UserDao userDao = (UserDao) context.getBean("userDao");
 
-            request.getRequestDispatcher("/WEB-INF/jsp/view/registerSuccess.jsp")
-                    .forward(request, response);
+
+        if(idCount == 0) { // Fresh instance of web application
+            userDao.dropUserTable(); // Drop the user table
+            if(debug) System.out.println("User table Dropped");
+            userDao.createUserTable(); // Create new instance of the user table
+            if(debug) System.out.println("User table created");
         }
+
+        // Create new user and set the attributes using local variables. //
+        User user = new User();
+        user.setUserID(idCount++);
+        user.setUsername(username);
+        user.setE_mail(e_mail);
+        user.setPassword(pass);
+        user.setFirst_name(fname);
+        user.setLast_name(lname);
+        userDao.insertUser(user); // Inserts the user into HSQLDB table
+        if(debug) System.out.println("\nAdded user: " + userDao.selectUser(idCount-1)); // Check database
+
+        request.getRequestDispatcher("/WEB-INF/jsp/view/registerSuccess.jsp")
+                .forward(request, response);
     }
 }
