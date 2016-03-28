@@ -175,37 +175,7 @@ public class HomeServlet extends HttpServlet
     private void userAdd(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        // Take parameters from form and set them in local variables //
-        String username = request.getParameter("username");
-        String e_mail = request.getParameter("e_mail");
-        String pass = request.getParameter("pass");
-        String fname = request.getParameter("fname");
-        String lname = request.getParameter("lname");
-
-        String acFile = "AppContext.xml"; // Use the settings from this xml file
-        ConfigurableApplicationContext context = new ClassPathXmlApplicationContext(acFile); // New AppContext pointing to xml config
-        UserDao userDao = (UserDao) context.getBean("userDao");
 
 
-        if(idCount == 0) { // Fresh instance of web application
-            userDao.dropUserTable(); // Drop the user table
-            if(debug) System.out.println("User table Dropped");
-            userDao.createUserTable(); // Create new instance of the user table
-            if(debug) System.out.println("User table created");
-        }
-
-        // Create new user and set the attributes using local variables. //
-        User user = new User();
-        user.setUserID(idCount++);
-        user.setUsername(username);
-        user.setE_mail(e_mail);
-        user.setPassword(pass);
-        user.setFirst_name(fname);
-        user.setLast_name(lname);
-        userDao.insertUser(user); // Inserts the user into HSQLDB table
-        if(debug) System.out.println("\nAdded user: " + userDao.selectUser(idCount-1)); // Check database
-
-        request.getRequestDispatcher("/WEB-INF/jsp/view/registerSuccess.jsp")
-                .forward(request, response);
     }
 }

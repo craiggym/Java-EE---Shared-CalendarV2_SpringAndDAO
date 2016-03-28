@@ -7,4 +7,5 @@ public interface UserDao {
     void dropUserTable();
     void insertUser(User user);
     String selectUser(int id);
+    boolean userExists(String username);
 }

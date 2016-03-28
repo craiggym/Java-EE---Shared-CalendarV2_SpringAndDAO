@@ -6,6 +6,7 @@
   To change this template use File | Settings | File Templates.
 --%>
 <!DOCTYPE HTML>
+<%@ page import="com.Calendar.RegisterServlet" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -19,6 +20,11 @@
         <fieldset>
             <legend><em>Personal Information</em></legend><br/>
             <label for="username">Username: </label><span> <input type="text" id="username" name="username"></span>
+            <%-- In the case the username is not unique --%>
+            <% HttpSession reg = request.getSession();
+                if(reg.getAttribute("duplicate") == "true") {%>
+            <span style="color: darkred;font-style: italic"><strong>That username is already taken!</strong></span>
+            <% }%>
             <br/><br/>
             <label for="pass">Password: </label> <span> <input type="password" id="pass" name="pass"></span>
             <br/><br/>

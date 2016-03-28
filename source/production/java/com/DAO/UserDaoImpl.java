@@ -8,6 +8,7 @@ public class UserDaoImpl implements UserDao{
     // class variables //
     private DataSource dataSource;
     private JdbcTemplate jdbcTemplate;
+    boolean debug = true;
 
     // methods //
     public void setDataSource(DataSource dataSource) {
@@ -50,5 +51,23 @@ public class UserDaoImpl implements UserDao{
         jdbcTemplate = new JdbcTemplate(dataSource);
         String username = (String)jdbcTemplate.queryForObject(query, input, String.class);
         return username;
+    }
+
+    @Override
+    public boolean userExists(String username) {
+        try {
+            String query = "SELECT username FROM User WHERE username=?";
+            Object[] input = new Object[]{username};
+            jdbcTemplate = new JdbcTemplate(dataSource);
+            String uname = (String) jdbcTemplate.queryForObject(query, input, String.class);
+            System.out.println("result of query: "+uname);
+            if (debug) System.out.println("User exists");
+            return true;
+        }
+        catch(Exception e){
+            if (debug) System.out.println("User does not exist");
+            return false;
+        }
+
     }
 }
