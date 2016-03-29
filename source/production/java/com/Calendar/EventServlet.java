@@ -46,21 +46,18 @@ public class EventServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
         if (action == null)
-            action = "list";
+            action = "viewAll";
         switch (action) {
-            case "create":
+            case "create": // Go to form
                 this.createEventPage(request, response);
                 break;
-            case "add_event":
+            case "add_event": // Coming from form
                 this.addEvent(request, response);
                 break;
-            case "likedEvent":
-                this.likedEvent(request, response);
+            case "likedEvent": // Coming from homepage 'like'
+                this.likedEvent(request,response);
                 break;
-            case "viewAll":
-                this.viewAll(request, response);
-                break;
-            default:
+            default: // View the user's personal page
                 this.userHome(request, response);
                 break;
         }
@@ -76,7 +73,7 @@ public class EventServlet extends HttpServlet {
      ***************************************/
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (request.getSession().getAttribute("username") == null) {
-            response.sendRedirect("home");
+            response.sendRedirect("/home");
             return;
         }
 
@@ -131,9 +128,11 @@ public class EventServlet extends HttpServlet {
         string = request.getParameter("year"); // Repeat for year...
         parser = string.split("_");
         String parsedYear = parser[1];
+
         // Result:
         String eventDate =  parsedMonth + "-" + parsedDate + "-" + parsedYear;
         Event createdNewEvent = new Event(id++, eventName, eventDate, eventDescription, username, author); // Create event object
+
         // Access database to add event
         EventDao eventDao = (EventDao) context.getBean("eventDao");
         eventDao.insertEvent(createdNewEvent);
@@ -235,39 +234,4 @@ public class EventServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/jsp/view/userPersonal.jsp")//User's Home page
                 .forward(request, response);
         }
-
-    /*********************************************************
-     *viewAll
-     * Redirect to Home page displaying all events
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
-     ********************************************************/
-    private void viewAll(HttpServletRequest request,HttpServletResponse response)
-            throws ServletException, IOException
-    {
-        HttpSession session = request.getSession(false);
-        String username =(String)session.getAttribute("username");
-
-        if(allEvents != null || allEvents.size() > 1) {
-            Collections.sort(allEvents, new Comparator<Event>() {
-                @Override
-                public int compare(Event o1, Event o2) {
-                    if(o1.getYearWeight() != o2.getYearWeight()){ // Year is not same
-                        return o1.getYearWeight()-o2.getYearWeight(); // Compare year;end function
-                    }
-                    else if(o1.getMonthWeight() == o2.getMonthWeight()){ // Same year; Same month
-                        return o1.getDateWeight()-o2.getDateWeight();// Compare date; end function
-                    }
-                    return o1.getMonthWeight()-o2.getMonthWeight(); // Same year; Different month; Compare month;
-                }
-            });
-        }
-        //== END HASHMAP AND SORT =======================================
-
-        request.setAttribute("allEvents", allEvents);
-        request.getRequestDispatcher("/WEB-INF/jsp/view/browse.jsp")//User's Home page
-                .forward(request, response);
-    }
 }

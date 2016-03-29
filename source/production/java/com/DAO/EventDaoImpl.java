@@ -71,9 +71,33 @@ public class EventDaoImpl implements EventDao{
     }
 
     @Override
+    public boolean eventsExists() {
+        try {
+            String query = "SELECT Count(*) FROM Event";
+            jdbcTemplate = new JdbcTemplate(dataSource);
+            int result = (int) jdbcTemplate.queryForObject(query, int.class);
+
+            if (debug) System.out.println("result of query(total events)): " + result);
+            if (result > 0) return true;
+        } catch (Exception e) {
+            if (debug) System.out.println("Exception caught in sql query for all_user event count");
+            return false;
+        }
+        return false;
+    }
+
+    @Override
     public List<Event> selectAllEvent(String username) {
         String query = "SELECT EventID, EventName, EventDate, EventDesc, EventUser, EventCreator FROM Event WHERE EventUser='"+username +"'";
         Object[] input = new Object[]{username};
+        jdbcTemplate = new JdbcTemplate(dataSource);
+        List<Event> events = jdbcTemplate.query(query, new EventMapper());
+        return events;
+    }
+
+    @Override
+    public List<Event> selectAllEvent() {
+        String query = "SELECT EventID, EventName, EventDate, EventDesc, EventUser, EventCreator FROM Event";
         jdbcTemplate = new JdbcTemplate(dataSource);
         List<Event> events = jdbcTemplate.query(query, new EventMapper());
         return events;

@@ -40,11 +40,12 @@
             String eventDate = e.getEventDate();
             String eventDesc = e.getDescription();
             String eventAuthor = e.getEventAuthor();%>
+
 Event Id: <%= eventId %> <br/>
 Event: <%= eventName %> <br/>
 Date: <%= eventDate %> <br/>
 Description: <%= eventDesc %> <br/>
-Creator: <%= eventAuthor %> <br/>
+Creator: <%= eventAuthor %> <br/><br/>
 <%
         }
     }
@@ -62,7 +63,7 @@ Creator: <%= eventAuthor %> <br/>
     <input type="submit" value="Log out"><br/>
 </form>
 
-<form action="event?action=viewAll" method="POST">
+<form action="home" method="POST">
     <input type="submit" value="Home Page">
 </form>
 <br/>
