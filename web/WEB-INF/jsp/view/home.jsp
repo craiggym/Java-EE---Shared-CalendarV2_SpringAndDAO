@@ -45,7 +45,6 @@
         <p></p>
             <%
     } else {
-        int counter = 0;
         List<Event> events = eventDao.selectAllEvent();
         for (Event e : events) {
             int eventId = e.getId();
@@ -59,14 +58,20 @@
         Date: <%= eventDate %> <br/>
         Description: <%= eventDesc %> <br/>
         Creator: <%= eventAuthor %> <br/><br/>
-            <% if(session.getAttribute("username") !=null){%>
+            <% session.setAttribute("eID", eventId);
+             session.setAttribute("eName", eventName);
+             session.setAttribute("eDate", eventDate);
+             session.setAttribute("eDesc", eventDesc);
+             session.setAttribute("eAuthor", eventAuthor);
+
+            if(session.getAttribute("username") !=null){%>
         <form action="event?action=likedEvent" method="POST">
-            <input type="hidden" name="it" value="<%= counter %>"/>
             <input type="submit" value="Like">
         </form>
-            <%counter++;}%><br/>
+        <br/>
             <%
         }
+    }
     }
 %>
 
