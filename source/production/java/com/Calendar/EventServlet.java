@@ -1,6 +1,9 @@
 package com.Calendar;
 
+import com.DAO.EventDao;
 import jdk.nashorn.internal.ir.annotations.Ignore;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -11,12 +14,10 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 import java.lang.reflect.Array;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
-
-/**
- * Created by BHARATH on 2/26/2016.
- */
 @WebServlet(name = "EventServlet",
         urlPatterns = {"/welcome", "/event"})
 public class EventServlet extends HttpServlet {
@@ -30,7 +31,9 @@ public class EventServlet extends HttpServlet {
     public static List<Event> eventArrayList = new ArrayList<>();
     public static List<Event> allEvents;
     int id=0;
-
+    private static String appContextFile = "AppContext.xml"; // Use the settings from this xml file
+    private static ConfigurableApplicationContext context = new ClassPathXmlApplicationContext("AppContext.xml");
+    private static boolean debug = true;
     /************************************
      * doPost
      * Create and view events
@@ -41,11 +44,6 @@ public class EventServlet extends HttpServlet {
      ***************************************/
     //public static Map<String, String> Liked = new LinkedHashMap<>();
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (request.getSession().getAttribute("username") == null) {
-            response.sendRedirect("home");
-            return;
-        }
-
         String action = request.getParameter("action");
         if (action == null)
             action = "list";
@@ -54,10 +52,10 @@ public class EventServlet extends HttpServlet {
                 this.createEventPage(request, response);
                 break;
             case "add_event":
-                    this.addEvent(request,response);
-                     break;
+                this.addEvent(request, response);
+                break;
             case "likedEvent":
-                this.likedEvent(request,response);
+                this.likedEvent(request, response);
                 break;
             case "viewAll":
                 this.viewAll(request, response);
@@ -83,8 +81,7 @@ public class EventServlet extends HttpServlet {
         }
 
         String action = request.getParameter("action");
-        if (action == null)
-            action = "list";
+        if (action == null) action = "list";
         switch (action) {
             default:
                 this.userHome(request, response);
@@ -122,73 +119,26 @@ public class EventServlet extends HttpServlet {
         String eventName = request.getParameter("eventName");
         String eventDescription = request.getParameter("Description");
         String username = (String) session.getAttribute("username");
-
+        String author = username;
 
         // Parsing the date passed from the HTML form //
         String string = request.getParameter("month"); // Passed from HTML
         String[] parser = string.split("_"); // Parse using the indicator
-        String parseMonth = parser[1]; // Take what we want
-        int monthWeight = Integer.parseInt(parseMonth);
+        String parsedMonth = parser[1]; // Take what we want
         string = request.getParameter("date"); // Repeat for date...
         parser = string.split("_");
         String parsedDate = parser[1];
-        int dateWeight = Integer.parseInt(parsedDate);
         string = request.getParameter("year"); // Repeat for year...
         parser = string.split("_");
         String parsedYear = parser[1];
-        int dateYear = Integer.parseInt(parsedYear);
-        String eventDate =  parseMonth + "-" + parsedDate + "-" + parsedYear;
+        // Result:
+        String eventDate =  parsedMonth + "-" + parsedDate + "-" + parsedYear;
+        Event createdNewEvent = new Event(id++, eventName, eventDate, eventDescription, username, author); // Create event object
+        // Access database to add event
+        EventDao eventDao = (EventDao) context.getBean("eventDao");
+        eventDao.insertEvent(createdNewEvent);
 
-
-        // Preparing the container for the Event object
-        session.setAttribute("eventName", eventName);
-        session.setAttribute("Description", eventDescription);
-        session.setAttribute("eventDate", eventDate);
-        session.setAttribute("username", username);
-        session.setAttribute("id", id++);
-        Event createdNewEvent = new Event(eventName, eventDate, eventDescription, username, id); // Create event object
-        createdNewEvent.setMonthWeight(monthWeight); // Set the values for the weights regarding date
-        createdNewEvent.setDateWeight(dateWeight);
-        createdNewEvent.setMonthWeightS(parseMonth);
-        createdNewEvent.setDateWeightS(parsedDate);
-        createdNewEvent.setYearWeight(dateYear);
-        createdNewEvent.setYearWeightS(parsedYear);
-
-        List<Event> checkForNull = eventDatabase.get(username);
-        if(checkForNull == null) eventArrayList = new ArrayList<>(); // If no event set, create a new one
-
-        //======================= SORTING CODE ===================== //
-        eventArrayList.add(createdNewEvent);
-
-        if(eventArrayList != null || eventArrayList.size() > 1) {
-            Collections.sort(eventArrayList, new Comparator<Event>() {
-                @Override
-                public int compare(Event o1, Event o2) {
-                    if(o1.getYearWeight() != o2.getYearWeight()){ // Year is not same
-                        return o1.getYearWeight()-o2.getYearWeight(); // Compare year;end function
-                    }
-                    else if(o1.getMonthWeight() == o2.getMonthWeight()){ // Same year; Same month
-                        return o1.getDateWeight()-o2.getDateWeight();// Compare date; end function
-                    }
-                    return o1.getMonthWeight()-o2.getMonthWeight(); // Same year; Different month; Compare month;
-                }
-            });
-        }
-        //======================================================================
-        eventDatabase.put(username, eventArrayList);
-
-
-        // Add to the allEvents dbase //
-        if(allEvents != null)
-            allEvents.add(createdNewEvent);
-        else{
-            allEvents = new ArrayList<>();
-            allEvents.add(createdNewEvent);
-        }
-
-
-        request.setAttribute("eventDatabase", eventDatabase);
-        request.getRequestDispatcher("/WEB-INF/jsp/view/welcome.jsp")//User's Home page
+        request.getRequestDispatcher("/WEB-INF/jsp/view/userPersonal.jsp")//User's Home page
                 .forward(request, response);
     }
 
@@ -207,7 +157,8 @@ public class EventServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         int it = Integer.parseInt(request.getParameter("it")); // Parsed from HTML form
         String username = (String) session.getAttribute("username");
-
+    }
+/*
         // Preparing the container for the Event object
         String eventName = allEvents.get(it).getEventName();
         String eventDate = allEvents.get(it).getEventDate();
@@ -251,12 +202,12 @@ public class EventServlet extends HttpServlet {
 
         session.setAttribute("username", username);
         request.setAttribute("eventDatabase", eventDatabase);
-        request.getRequestDispatcher("/WEB-INF/jsp/view/welcome.jsp")//User's Home page
+        request.getRequestDispatcher("/WEB-INF/jsp/view/userPersonal.jsp")//User's Home page
                 .forward(request, response);
-    }
+    }*/
     /*********************************************************
      *userHome
-     * Redirect to userHome page
+     * userHome page
      * @param request
      * @param response
      * @throws ServletException
@@ -266,10 +217,22 @@ public class EventServlet extends HttpServlet {
             throws ServletException, IOException
          {
              HttpSession session = request.getSession(false);
-             String username =(String)session.getAttribute("username");
-             request.setAttribute("eventDatabase", eventDatabase);
+             EventDao eventDao = (EventDao) context.getBean("eventDao");
+             // Fresh instance of web application. Clear out the data and re-establish tables //
+             if(id == 0) {
+                 try {
+                     eventDao.dropEventTable();
+                 } catch (Exception e) {
+                     System.out.println("There is no Event table to drop");
+                 }
+                 eventDao.createEventTable();
+                 if (debug) System.out.println("Event table cleared");
+             }
+             if(session.getAttribute("username") == null) // Need to log in if accessed by link
+                 request.getRequestDispatcher("/home")// Home page
+                         .forward(request, response);
 
-        request.getRequestDispatcher("/WEB-INF/jsp/view/welcome.jsp")//User's Home page
+        request.getRequestDispatcher("/WEB-INF/jsp/view/userPersonal.jsp")//User's Home page
                 .forward(request, response);
         }
 
@@ -302,10 +265,6 @@ public class EventServlet extends HttpServlet {
             });
         }
         //== END HASHMAP AND SORT =======================================
-
-
-
-
 
         request.setAttribute("allEvents", allEvents);
         request.getRequestDispatcher("/WEB-INF/jsp/view/browse.jsp")//User's Home page

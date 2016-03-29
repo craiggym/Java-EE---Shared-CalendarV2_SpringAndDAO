@@ -1,5 +1,6 @@
 package com.Calendar;
 
+import com.DAO.EventDao;
 import com.DAO.UserDao;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -25,6 +26,8 @@ public class RegisterServlet extends HttpServlet {
     int idCount=0;
     boolean debug=true;
     private static String appContextFile = "AppContext.xml"; // Use the settings from this xml file
+    private static ConfigurableApplicationContext context = new ClassPathXmlApplicationContext("AppContext.xml");
+
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         addUser(request,response);
@@ -68,13 +71,6 @@ public class RegisterServlet extends HttpServlet {
         HttpSession session = request.getSession(true);
 
         try { // catch occurs when HSQLDB is not established
-            if (idCount == 0) { // Fresh instance of web application means to clear out the data and re-establish tables
-                userDao.dropUserTable();
-                if (debug) System.out.println("User table Dropped");
-                userDao.createUserTable();
-                if (debug) System.out.println("User table created");
-            }
-
             // First check if username is unique otherwise throw fail
             String username = request.getParameter("username");
             if (!userDao.userExists(username)) { //User doesn't exist. Proceed with user add:
@@ -94,7 +90,6 @@ public class RegisterServlet extends HttpServlet {
                 user.setFirst_name(fname);
                 user.setLast_name(lname);
                 userDao.insertUser(user); // Inserts the user into HSQLDB table
-                if (debug) System.out.println("\nAdded user: " + userDao.selectUser(idCount - 1)); // Check database
 
                 session.setAttribute("duplicate", "false");
                 request.getRequestDispatcher("/WEB-INF/jsp/view/registerSuccess.jsp")
@@ -126,6 +121,28 @@ public class RegisterServlet extends HttpServlet {
                               HttpServletResponse response)
             throws ServletException, IOException
     {
+        // Fresh instance of web application. Clear out the data and re-establish tables //
+        if (idCount == 0) {
+            UserDao userDao = (UserDao) context.getBean("userDao");
+            EventDao eventDao = (EventDao) context.getBean("eventDao");
+            try {
+                try {
+                    userDao.dropUserTable();
+                } catch (Exception e) {
+                    System.out.println("There is no user table to drop");
+                }
+                userDao.createUserTable();
+                if (debug) System.out.println("User table cleared");
+            }
+            catch(CannotGetJdbcConnectionException e){
+                e.printStackTrace();
+                System.out.println("Database connection could not be established");
+                request.getRequestDispatcher("/WEB-INF/jsp/view/databaseError.jsp")
+                        .forward(request, response);
+            }
+        }
+        // End procedure of clearing data //
+
         request.getRequestDispatcher("/WEB-INF/jsp/view/register.jsp")
                 .forward(request, response);
     }

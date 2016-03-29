@@ -15,8 +15,8 @@
 
         <% if(session.getAttribute("username")==null){%>
             <h2><a href="register">Link to Register</a></h2>
-        <% if(session.getAttribute("auth") == "false") %>
-        <span style="color: darkred;font-style: italic"><strong>Incorrect username or password!</strong></span>
+            <% if(session.getAttribute("auth") == "false") %>
+            <span style="color: darkred;font-style: italic"><strong>Incorrect username or password!</strong></span>
             <form action="home?action=login" method="POST">
              Username: <input type="text" name="username"/><br>
              Password: <input type="password" name="password"/><br>

@@ -6,7 +6,7 @@ public interface UserDao {
     void createUserTable();
     void dropUserTable();
     void insertUser(User user);
-    String selectUser(int id);
+    String selectFirstName(String username);
     boolean userExists(String username);
     boolean isAuthCorrect(String username, String password);
 }

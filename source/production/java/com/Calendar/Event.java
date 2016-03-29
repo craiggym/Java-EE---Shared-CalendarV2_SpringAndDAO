@@ -1,29 +1,17 @@
 package com.Calendar;
 
-import sun.java2d.pipe.SpanShapeRenderer;
 
-import java.text.SimpleDateFormat;
-import java.util.Comparator;
-import java.util.Date;
 
 /**
  * Created by BHARATH on 2/26/2016.
  */
 public class Event{
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     private Integer id;
     private String eventName;
     private String eventDate;
     private String eventDescription;
     private String username;
+    private String eventAuthor;
     private int monthWeight;
     private int dateWeight;
     private String monthWeightS;
@@ -32,12 +20,13 @@ public class Event{
     private int yearWeight;
     private String yearWeightS;
 
-    Event(String name, String date, String desc, String uname, Integer id) {
+    public Event(Integer id, String name, String date, String desc, String uname, String author) {
+        this.id = id;
         this.eventName = name;
         this.eventDate = date;
         this.eventDescription = desc;
         this.username = uname;
-        this.id = id;
+        this.eventAuthor = author;
     }
 
     //============== Getters ====================================
@@ -95,5 +84,21 @@ public class Event{
     }
     public void setYearWeightS(String y){
         this.yearWeightS = y;
+    }
+
+    public String getEventAuthor() {
+        return eventAuthor;
+    }
+
+    public void setEventAuthor(String eventAuthor) {
+        this.eventAuthor = eventAuthor;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 }

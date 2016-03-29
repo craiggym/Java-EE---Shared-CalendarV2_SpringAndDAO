@@ -9,6 +9,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.*;
 //Added for proj 2//
+import com.DAO.EventDao;
 import com.DAO.UserDao;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -23,7 +24,6 @@ import org.springframework.jdbc.core.support.JdbcDaoSupport;
 public class HomeServlet extends HttpServlet
 {
     // Variables //
-    private static int idCount = 0;
     private static final Map<String, String> userDatabase = new Hashtable<>();
     boolean debug = true;
     private static String appContextFile = "AppContext.xml"; // Use the settings from this xml file
@@ -79,21 +79,30 @@ public class HomeServlet extends HttpServlet
     }
 
     private void login(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
         String username=request.getParameter("username");
         String password=request.getParameter("password");
         HttpSession session = request.getSession(true);
         UserDao user = (UserDao) context.getBean("userDao");
-
         session.setAttribute("auth", "true");
+
+        if(username == null) { // Accessing the page via link without logging in
+            request.getRequestDispatcher("/WEB-INF/jsp/view/home.jsp")
+                    .forward(request, response);
+        }
+
+        // AUTHENTICATION //
         if(user.isAuthCorrect(username, password)) // authenticate through database
         {
-            request.getRequestDispatcher("/WEB-INF/jsp/view/welcome.jsp")
+            session.setAttribute("username", username);
+            session.setAttribute("first_name", user.selectFirstName(username));
+            request.getRequestDispatcher("/welcome")
                     .forward(request, response);
         }
         else
         {
             session.setAttribute("auth","false");
-            request.getRequestDispatcher("/WEB-INF/jsp/view/browse.jsp")
+            request.getRequestDispatcher("/WEB-INF/jsp/view/home.jsp")
                     .forward(request, response);
         }
     }
@@ -149,10 +158,10 @@ public class HomeServlet extends HttpServlet
             throws ServletException, IOException
     {
         HttpSession session = request.getSession(true);
-        session.setAttribute("auth", "true");
+        session.setAttribute("auth", "null"); // Incorrect auth message doesn't need to be shown
 
-        request.setAttribute("allEvents",EventServlet.eventDatabase);
-        request.getRequestDispatcher("/WEB-INF/jsp/view/browse.jsp")
+
+        request.getRequestDispatcher("/WEB-INF/jsp/view/home.jsp")
                 .forward(request, response);
     }
 }
