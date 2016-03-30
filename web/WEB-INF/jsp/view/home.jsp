@@ -15,7 +15,7 @@
 
     </head>
     <body>
-    <h1>Event page</h1>
+    <h1>Home page</h1>
 
     <% if (session.getAttribute("username") == null) {%>
     <h2><a href="register">Link to Register</a></h2>
@@ -25,7 +25,7 @@
     <form action="home?action=login" method="POST">
         Username: <input type="text" name="username"/><br>
         Password: <input type="password" name="password"/><br>
-        <input type="submit" value="login"/><br>
+        <input type="submit" value="login"/><br><br/>
             <%}else{%>
         <form action="welcome" method="POST">
             <input type="submit" Value="User Page">
@@ -41,11 +41,13 @@
     System.out.println(session.getAttribute("username"));
     if (eventDao.eventsExists() == false) {%>
         <h3>There are no events from any users</h3>
-        <p><em>Create one from the User Page!</em>
+        <p><em>Create one from the User Page after logging in!</em>
         <p></p>
             <%
     } else {
-        List<Event> events = eventDao.selectAllEvent();
+        int counter = 0;
+        List<Event> events = eventDao.selectAllEvents();
+        session.setAttribute("eventsList", events);
         for (Event e : events) {
             int eventId = e.getId();
             String eventName = e.getEventName();
@@ -58,20 +60,19 @@
         Date: <%= eventDate %> <br/>
         Description: <%= eventDesc %> <br/>
         Creator: <%= eventAuthor %> <br/><br/>
-            <% session.setAttribute("eID", eventId);
-             session.setAttribute("eName", eventName);
-             session.setAttribute("eDate", eventDate);
-             session.setAttribute("eDesc", eventDesc);
-             session.setAttribute("eAuthor", eventAuthor);
 
-            if(session.getAttribute("username") !=null){%>
+        <%    if(session.getAttribute("username") !=null &&
+         eventDao.hasEvent(eventName,session.getAttribute("username").toString())==false){%>
         <form action="event?action=likedEvent" method="POST">
+            <input type="hidden" name="it" value="<%= counter %>"/>
             <input type="submit" value="Like">
         </form>
-        <br/>
+
             <%
+            counter++;%><br/>
+            <%
+            }
         }
-    }
     }
 %>
 

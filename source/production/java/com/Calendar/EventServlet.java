@@ -155,16 +155,24 @@ public class EventServlet extends HttpServlet {
 
         // Taken from HTML form
         HttpSession session = request.getSession(false);
-        int eventID = (int) session.getAttribute("eID");
-        String eventName = (String) session.getAttribute("eName");
-        String eventDate = (String) session.getAttribute("eDate");
-        String eventDescription = (String) session.getAttribute("eDesc");
+        int it = Integer.parseInt(request.getParameter("it")); // Parsed from HTML form
+        List<Event> event = (List<Event>) session.getAttribute("eventsList");
+
+        int eventID = event.get(it).getId();
+        String eventName = event.get(it).getEventName();
+        String eventDate = event.get(it).getEventDate();
+        String eventDescription = event.get(it).getDescription();
         String username = (String) session.getAttribute("username");
-        String author = (String) session.getAttribute("eAuthor");
+        String author = event.get(it).getEventAuthor();
 
         Event createdNewEvent = new Event(eventID, eventName, eventDate, eventDescription, username, author); // Create event object
+
         EventDao eventDao = (EventDao) context.getBean("eventDao");
         eventDao.insertEvent(createdNewEvent);
+
+        if(debug){
+            System.out.printf("Following:\nID:%d\nTitle:%s\nDate:%s\nDesc:%s\nusername:%s\nauthor:%s\n", eventID,eventName,eventDate,eventDescription,username,author);
+        }
         request.getRequestDispatcher("/WEB-INF/jsp/view/userPersonal.jsp")//User's Home page
                 .forward(request, response);
     }

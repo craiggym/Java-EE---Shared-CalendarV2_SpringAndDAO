@@ -11,6 +11,7 @@ public interface EventDao {
     void dropEventTable();
     boolean eventsExists(String username);
     boolean eventsExists();
+    boolean hasEvent(String eventname, String username);
     List<Event> selectAllEvent(String username);
-    List<Event> selectAllEvent();
+    List<Event> selectAllEvents();
 }

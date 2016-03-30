@@ -87,6 +87,21 @@ public class EventDaoImpl implements EventDao{
     }
 
     @Override
+    public boolean hasEvent(String eventname, String username) {
+        try {
+            String query = "SELECT EventName FROM Event WHERE EventUser='"+username+"' AND EventName='"+eventname+"'";
+            jdbcTemplate = new JdbcTemplate(dataSource);
+            String result = (String) jdbcTemplate.queryForObject(query, String.class);
+
+            if (debug) System.out.println("result of hasEvent: " + result);
+            return true;
+        } catch (Exception e) {
+            if (debug) System.out.println("Exception caught in sql query for hasEvent!!");
+            return false;
+        }
+    }
+
+    @Override
     public List<Event> selectAllEvent(String username) {
         String query = "SELECT EventID, EventName, EventDate, EventDesc, EventUser, EventCreator FROM Event WHERE EventUser='"+username +"'";
         Object[] input = new Object[]{username};
@@ -96,8 +111,8 @@ public class EventDaoImpl implements EventDao{
     }
 
     @Override
-    public List<Event> selectAllEvent() {
-        String query = "SELECT EventID, EventName, EventDate, EventDesc, EventUser, EventCreator FROM Event";
+    public List<Event> selectAllEvents() {
+        String query = "SELECT EventID, EventName, EventDate, EventDesc, EventUser, EventCreator FROM Event WHERE EventUser=EventCreator";
         jdbcTemplate = new JdbcTemplate(dataSource);
         List<Event> events = jdbcTemplate.query(query, new EventMapper());
         return events;

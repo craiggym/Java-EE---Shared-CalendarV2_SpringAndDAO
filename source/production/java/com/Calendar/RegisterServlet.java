@@ -70,42 +70,66 @@ public class RegisterServlet extends HttpServlet {
         UserDao userDao = (UserDao) context.getBean("userDao");
         HttpSession session = request.getSession(true);
 
-        try { // catch occurs when HSQLDB is not established
-            // First check if username is unique otherwise throw fail
-            String username = request.getParameter("username");
-            if (!userDao.userExists(username)) { //User doesn't exist. Proceed with user add:
-                // Take rest of parameters from form and set them in local variables //
-                String e_mail = request.getParameter("e_mail");
-                String pass = request.getParameter("pass");
-                String fname = request.getParameter("fname");
-                String lname = request.getParameter("lname");
+        String pass1 = request.getParameter("pass");
+        String pass2 = request.getParameter("pass2");
+        if (request.getParameter("fname") == "") session.setAttribute("nameEmpty", "true");
+        else session.setAttribute("nameEmpty", "false");
+
+        if (request.getParameter("username") == "") session.setAttribute("unameEmpty", "true");
+        else session.setAttribute("unameEmpty", "false");
+
+        if(!pass1.equalsIgnoreCase(pass2)) session.setAttribute("passMatch", "false");
+        else session.setAttribute("passMatch", "true");
+
+        if(pass1 == "") session.setAttribute("passBlank", "true");
+        else session.setAttribute("passBlank", "false");
+
+        if( !pass1.equalsIgnoreCase(pass2) || pass1 == "" || request.getParameter("fname") == "" || request.getParameter("username") == "") // Password inputs must match
+        {
+            request.getRequestDispatcher("/WEB-INF/jsp/view/register.jsp")
+                    .forward(request, response);
+        }
+        else {
+            session.setAttribute("passBlank", "false");
+            session.setAttribute("nameEmpty", "false");
+            session.setAttribute("passMatch", "true");
+            session.setAttribute("unameEmpty", "false");
+            try { // catch occurs when HSQLDB is not established
+                // First check if username is unique otherwise throw fail
+                String username = request.getParameter("username");
+                if (!userDao.userExists(username)) { //User doesn't exist. Proceed with user add:
+                    // Take rest of parameters from form and set them in local variables //
+                    String e_mail = request.getParameter("e_mail");
+                    String pass = request.getParameter("pass");
+                    String fname = request.getParameter("fname");
+                    String lname = request.getParameter("lname");
 
 
-                // Create new user and set the attributes using local variables. //
-                User user = new User();
-                user.setUserID(idCount++);
-                user.setUsername(username);
-                user.setE_mail(e_mail);
-                user.setPassword(pass);
-                user.setFirst_name(fname);
-                user.setLast_name(lname);
-                userDao.insertUser(user); // Inserts the user into HSQLDB table
+                    // Create new user and set the attributes using local variables. //
+                    User user = new User();
+                    user.setUserID(idCount++);
+                    user.setUsername(username);
+                    user.setE_mail(e_mail);
+                    user.setPassword(pass);
+                    user.setFirst_name(fname);
+                    user.setLast_name(lname);
+                    userDao.insertUser(user); // Inserts the user into HSQLDB table
 
-                session.setAttribute("duplicate", "false");
-                request.getRequestDispatcher("/WEB-INF/jsp/view/registerSuccess.jsp")
-                        .forward(request, response);
-            } else { // Username exists in the database
-                session.setAttribute("duplicate", "true");
+                    session.setAttribute("duplicate", "false");
+                    request.getRequestDispatcher("/WEB-INF/jsp/view/registerSuccess.jsp")
+                            .forward(request, response);
+                } else { // Username exists in the database
+                    session.setAttribute("duplicate", "true");
 
-                request.getRequestDispatcher("/WEB-INF/jsp/view/register.jsp")
+                    request.getRequestDispatcher("/WEB-INF/jsp/view/register.jsp")
+                            .forward(request, response);
+                }
+            } catch (CannotGetJdbcConnectionException e) {
+                e.printStackTrace();
+                System.out.println("Database connection could not be established");
+                request.getRequestDispatcher("/WEB-INF/jsp/view/databaseError.jsp")
                         .forward(request, response);
             }
-        }
-        catch (CannotGetJdbcConnectionException e){
-            e.printStackTrace();
-            System.out.println("Database connection could not be established");
-            request.getRequestDispatcher("/WEB-INF/jsp/view/databaseError.jsp")
-                    .forward(request, response);
         }
     }
 
@@ -142,7 +166,10 @@ public class RegisterServlet extends HttpServlet {
             }
         }
         // End procedure of clearing data //
-
+        request.getSession().setAttribute("passBlank", "null");
+        request.getSession().setAttribute("unameEmpty", "null");
+        request.getSession().setAttribute("nameEmpty", "null");
+        request.getSession().setAttribute("passMatch", "null");
         request.getRequestDispatcher("/WEB-INF/jsp/view/register.jsp")
                 .forward(request, response);
     }

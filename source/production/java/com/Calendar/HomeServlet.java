@@ -117,28 +117,6 @@ public class HomeServlet extends HttpServlet
     private void logout(HttpServletRequest request,HttpServletResponse response)
             throws ServletException, IOException
     {
-        //======================= SORTING CODE ===================== //
-        EventServlet.allEvents = new ArrayList<>();
-        if(EventServlet.eventDatabase != null) {
-            for (String name : EventServlet.eventDatabase.keySet()) {
-                List<Event> e = EventServlet.eventDatabase.get(name);// grab all values for key
-                for (int i = 0; i < e.size(); i++) // Iterate through the list for each key user
-                    EventServlet.allEvents.add(e.get(i)); // Gobble gobble
-            }
-        }
-        if(EventServlet.eventArrayList != null || EventServlet.eventArrayList.size() > 1) {
-            Collections.sort(EventServlet.eventArrayList, new Comparator<Event>() {
-                @Override
-                public int compare(Event o1, Event o2) {
-                    if(o1.getMonthWeight() == o2.getMonthWeight()){
-                        return o1.getDateWeight()-o2.getDateWeight();
-                    }
-                    return o1.getMonthWeight()-o2.getMonthWeight();
-                }
-            });
-        }
-        //======================================================================
-
 
         HttpSession session = request.getSession(false);
         session.invalidate();//to invalidate the session
@@ -159,7 +137,6 @@ public class HomeServlet extends HttpServlet
     {
         HttpSession session = request.getSession(true);
         session.setAttribute("auth", "null"); // Incorrect auth message doesn't need to be shown
-
 
         request.getRequestDispatcher("/WEB-INF/jsp/view/home.jsp")
                 .forward(request, response);

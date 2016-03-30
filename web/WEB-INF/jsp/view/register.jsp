@@ -19,20 +19,30 @@
     <form action="register" method="POST">
         <fieldset>
             <legend><em>Personal Information</em></legend><br/>
-            <label for="username">Username: </label><span> <input type="text" id="username" name="username"></span>
+            <label for="username">Username *: </label><span> <input type="text" id="username" name="username"></span>
+            <% HttpSession reg = request.getSession();%>
+            <%-- In the case the username is empty --%>
+            <%  if(reg.getAttribute("unameEmpty") == "true") %>
+            <span style="color: darkred;font-style: italic"><strong>Username cannot be empty!!</strong></span>
             <%-- In the case the username is not unique --%>
-            <% HttpSession reg = request.getSession();
-                if(reg.getAttribute("duplicate") == "true") {%>
+            <%if(reg.getAttribute("duplicate") == "true")%>
             <span style="color: darkred;font-style: italic"><strong>That username is already taken!</strong></span>
-            <% }%>
             <br/><br/>
-            <label for="pass">Password: </label> <span> <input type="password" id="pass" name="pass"></span>
+            <label for="pass">Password *: </label> <span> <input type="password" id="pass" name="pass"></span>
+            <%-- In the case the passwords aren't matching --%>
+            <%  if(reg.getAttribute("passMatch") == "false") %>
+            <span style="color: darkred;font-style: italic"><strong>Passwords must match!</strong></span>
+            <%-- In the case the passwords are empty --%>
+            <%  if(reg.getAttribute("passBlank") == "true") %>
+            <span style="color: darkred;font-style: italic"><strong>Passwords cannot be empty!!</strong></span>
             <br/><br/>
-            <label for="pass2">Password (again): </label> <span> <input type="password" id="pass2" name="pass2"></span>
+            <label for="pass2">Password (again)*: </label> <span> <input type="password" id="pass2" name="pass2"></span>
             <br/><br/>
             <label for="e_mail">E-mail: </label> <span> <input type="email" id="e_mail" name="e_mail"></span>
             <br/><br/>
-            <label for="fname">First name: </label><span> <input type="text" id="fname" name="fname"></span>
+            <label for="fname">First name *: </label><span> <input type="text" id="fname" name="fname"></span>
+            <%  if(reg.getAttribute("nameEmpty") == "true") %>
+            <span style="color: darkred;font-style: italic"><strong>First name cannot be empty!</strong></span>
             <br/><br/>
             <label for="lname">Last name: </label> <span> <input type="text" id="lname" name="lname"></span>
                 <br/><br/>
