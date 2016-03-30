@@ -10,6 +10,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="java.util.Calendar" %>
 <% String appContextFile = "AppContext.xml"; // Use the settings from this xml file %>
 <% ConfigurableApplicationContext context = new ClassPathXmlApplicationContext("AppContext.xml"); %>
 
@@ -29,12 +30,18 @@
 <% // Display message if the user has no events
     EventDao eventDao = (EventDao) context.getBean("eventDao");
     System.out.println(session.getAttribute("username"));
+
+    Date todays_date = new Date();
+    Calendar cal = Calendar.getInstance();
+    cal.add(Calendar.MONTH,1);
+    Date beyond_date = cal.getTime();
+
     if (eventDao.eventsExists(session.getAttribute("username").toString()) == false) {%>
 <h3>Not subscribed to any events!</h3>
 <p><em>Create one or follow one from the Home page!</em>
 <p></p>
 <%
-    } else {
+    } else { %> <em style="color: gray;"><strong>Showing events up to 3 months from today</strong></em><br/> <%
         List<Event> events = eventDao.selectAllEvent(session.getAttribute("username").toString());
         for (Event e : events) {
             int eventId = e.getId();
@@ -43,20 +50,20 @@
             String eventDesc = e.getDescription();
             String eventAuthor = e.getEventAuthor();
             String eventDateStr = new SimpleDateFormat("MM-dd-yyyy").format(eventDate);
+            if(eventDate.after(todays_date) && eventDate.before(beyond_date)){
 %>
 
-Event Id: <%= eventId %> <br/>
-Event: <%= eventName %> <br/>
-Date: <%= eventDateStr %> <br/>
-Description: <%= eventDesc %> <br/>
-Creator: <%= eventAuthor %> <br/><br/>
-<%
+                Event Id: <%= eventId %> <br/>
+                Event: <%= eventName %> <br/>
+                Date: <%= eventDateStr %> <br/>
+                Description: <%= eventDesc %> <br/>
+                Creator: <%= eventAuthor %> <br/><br/>
+<%}
         }
     }
 %>
 
 <br />
-
 
 <br/>
 

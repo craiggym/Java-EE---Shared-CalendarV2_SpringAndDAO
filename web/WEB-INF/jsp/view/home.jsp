@@ -45,7 +45,9 @@
         <p><em>Create one from the User Page after logging in!</em>
         <p></p>
             <%
-    } else {
+    } else { %>
+        <em style="color: gray;"><strong>Showing all events</strong></em><br/>
+            <%
         int counter = 0;
         List<Event> events = eventDao.selectAllEvents();
         session.setAttribute("eventsList", events);

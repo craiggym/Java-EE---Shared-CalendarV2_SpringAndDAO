@@ -14,8 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-import java.lang.reflect.Array;
-import java.text.ParseException;
+
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -23,16 +22,7 @@ import java.util.*;
         urlPatterns = {"/welcome", "/event"})
 public class EventServlet extends HttpServlet {
     public static Calendar date = Calendar.getInstance();
-   // public static Map<Integer, Event> eventDatabase = new LinkedHashMap<>();
-    //public static Map<Integer, Event> personalDatabase = new LinkedHashMap<>();
-
-    //public static Map<String, LinkedList<Event>> eventDatabase = new HashMap<>();
-    //public static LinkedList<Event> eventLinkedList = new LinkedList<>();
-    public static Map<String, List<Event>> eventDatabase = new HashMap<>();
-    public static List<Event> eventArrayList = new ArrayList<>();
-    public static List<Event> allEvents;
     int id=0;
-    private static String appContextFile = "AppContext.xml"; // Use the settings from this xml file
     private static ConfigurableApplicationContext context = new ClassPathXmlApplicationContext("AppContext.xml");
     private static boolean debug = true;
     /************************************
