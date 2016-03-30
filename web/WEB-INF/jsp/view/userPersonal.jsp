@@ -8,6 +8,8 @@
 <%@ page import="com.DAO.EventDao" %>
 <%@ page import="com.DAO.EventMapper" %>
 <%@ page import="java.util.List" %>
+<%@ page import="java.util.Date" %>
+<%@ page import="java.text.SimpleDateFormat" %>
 <% String appContextFile = "AppContext.xml"; // Use the settings from this xml file %>
 <% ConfigurableApplicationContext context = new ClassPathXmlApplicationContext("AppContext.xml"); %>
 
@@ -37,13 +39,15 @@
         for (Event e : events) {
             int eventId = e.getId();
             String eventName = e.getEventName();
-            String eventDate = e.getEventDate();
+            Date eventDate = e.getEventDate();
             String eventDesc = e.getDescription();
-            String eventAuthor = e.getEventAuthor();%>
+            String eventAuthor = e.getEventAuthor();
+            String eventDateStr = new SimpleDateFormat("MM-dd-yyyy").format(eventDate);
+%>
 
 Event Id: <%= eventId %> <br/>
 Event: <%= eventName %> <br/>
-Date: <%= eventDate %> <br/>
+Date: <%= eventDateStr %> <br/>
 Description: <%= eventDesc %> <br/>
 Creator: <%= eventAuthor %> <br/><br/>
 <%

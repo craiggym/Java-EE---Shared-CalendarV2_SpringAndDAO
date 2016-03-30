@@ -1,6 +1,7 @@
 package com.Calendar;
 
 
+import java.util.Date;
 
 /**
  * Created by BHARATH on 2/26/2016.
@@ -8,7 +9,7 @@ package com.Calendar;
 public class Event{
     private Integer id;
     private String eventName;
-    private String eventDate;
+    private Date eventDate;
     private String eventDescription;
     private String username;
     private String eventAuthor;
@@ -20,7 +21,7 @@ public class Event{
     private int yearWeight;
     private String yearWeightS;
 
-    public Event(Integer id, String name, String date, String desc, String uname, String author) {
+    public Event(Integer id, String name, Date date, String desc, String uname, String author) {
         this.id = id;
         this.eventName = name;
         this.eventDate = date;
@@ -30,7 +31,7 @@ public class Event{
     }
 
     //============== Getters ====================================
-    public String getEventDate() {
+    public Date getEventDate() {
         return this.eventDate;
     }
 
@@ -56,7 +57,7 @@ public class Event{
         this.eventName = name;
     }
 
-    public void setEventDate(String date) {
+    public void setEventDate(Date date) {
         this.eventDate = date;
     }
 

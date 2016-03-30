@@ -4,6 +4,7 @@
 <%@ page import="com.DAO.EventDao" %>
 <%@ page import="org.springframework.context.ConfigurableApplicationContext" %>
 <%@ page import="org.springframework.context.support.ClassPathXmlApplicationContext" %>
+<%@ page import="java.text.SimpleDateFormat" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <% String appContextFile = "AppContext.xml"; // Use the settings from this xml file %>
@@ -51,13 +52,16 @@
         for (Event e : events) {
             int eventId = e.getId();
             String eventName = e.getEventName();
-            String eventDate = e.getEventDate();
+            Date eventDate = e.getEventDate();
             String eventDesc = e.getDescription();
-            String eventAuthor = e.getEventAuthor();%>
+            String eventAuthor = e.getEventAuthor();
+            String eventDateStr = new SimpleDateFormat("MM-dd-yyyy").format(eventDate);
+
+            %>
 
         Event Id: <%= eventId %> <br/>
         Event: <%= eventName %> <br/>
-        Date: <%= eventDate %> <br/>
+        Date: <%= eventDateStr %> <br/>
         Description: <%= eventDesc %> <br/>
         Creator: <%= eventAuthor %> <br/><br/>
 

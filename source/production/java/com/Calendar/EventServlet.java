@@ -132,7 +132,15 @@ public class EventServlet extends HttpServlet {
 
         // Result:
         String eventDate =  parsedMonth + "-" + parsedDate + "-" + parsedYear;
-        Event createdNewEvent = new Event(id++, eventName, eventDate, eventDescription, username, author); // Create event object
+        Date eventDateFormatted = new Date();
+        try {
+            eventDateFormatted = new SimpleDateFormat("MM-dd-yyyy").parse(eventDate);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Event createdNewEvent = new Event(id++, eventName, eventDateFormatted, eventDescription, username, author); // Create event object
 
         // Access database to add event
         EventDao eventDao = (EventDao) context.getBean("eventDao");
@@ -160,7 +168,7 @@ public class EventServlet extends HttpServlet {
 
         int eventID = event.get(it).getId();
         String eventName = event.get(it).getEventName();
-        String eventDate = event.get(it).getEventDate();
+        Date eventDate = event.get(it).getEventDate();
         String eventDescription = event.get(it).getDescription();
         String username = (String) session.getAttribute("username");
         String author = event.get(it).getEventAuthor();

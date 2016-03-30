@@ -41,7 +41,7 @@ public class EventDaoImpl implements EventDao{
 
     @Override
     public void createEventTable() {
-        String query = "CREATE TABLE Event(EventID int, EventName VARCHAR(255), EventDate VARCHAR(255), EventDesc VARCHAR(255), EventUser VARCHAR(255), EventCreator VARCHAR(255));";
+        String query = "CREATE TABLE Event(EventID int, EventName VARCHAR(255), EventDate Date, EventDesc VARCHAR(255), EventUser VARCHAR(255), EventCreator VARCHAR(255));";
         jdbcTemplate = new JdbcTemplate(dataSource);
         jdbcTemplate.execute(query);
     }
