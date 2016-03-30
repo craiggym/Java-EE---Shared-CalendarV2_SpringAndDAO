@@ -103,7 +103,7 @@ public class EventDaoImpl implements EventDao{
 
     @Override
     public List<Event> selectAllEvent(String username) {
-        String query = "SELECT EventID, EventName, EventDate, EventDesc, EventUser, EventCreator FROM Event WHERE EventUser='"+username +"'";
+        String query = "SELECT EventID, EventName, EventDate, EventDesc, EventUser, EventCreator FROM Event WHERE EventUser='"+username +"' ORDER BY EventDate ASC";
         Object[] input = new Object[]{username};
         jdbcTemplate = new JdbcTemplate(dataSource);
         List<Event> events = jdbcTemplate.query(query, new EventMapper());
@@ -112,7 +112,7 @@ public class EventDaoImpl implements EventDao{
 
     @Override
     public List<Event> selectAllEvents() {
-        String query = "SELECT EventID, EventName, EventDate, EventDesc, EventUser, EventCreator FROM Event WHERE EventUser=EventCreator";
+        String query = "SELECT EventID, EventName, EventDate, EventDesc, EventUser, EventCreator FROM Event WHERE EventUser=EventCreator ORDER BY EventDate ASC";
         jdbcTemplate = new JdbcTemplate(dataSource);
         List<Event> events = jdbcTemplate.query(query, new EventMapper());
         return events;
