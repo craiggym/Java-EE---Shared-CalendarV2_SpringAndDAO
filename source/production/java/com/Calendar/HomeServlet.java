@@ -13,6 +13,7 @@ import com.DAO.EventDao;
 import com.DAO.UserDao;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
@@ -24,8 +25,8 @@ import org.springframework.jdbc.core.support.JdbcDaoSupport;
 public class HomeServlet extends HttpServlet
 {
     // Variables //
-    private static final Map<String, String> userDatabase = new Hashtable<>();
     boolean debug = true;
+    private static boolean freshInstance = true;
     private static String appContextFile = "AppContext.xml"; // Use the settings from this xml file
     private static ConfigurableApplicationContext context = new ClassPathXmlApplicationContext("AppContext.xml");
 
@@ -56,6 +57,33 @@ public class HomeServlet extends HttpServlet
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
+        if(freshInstance) {
+            freshInstance = false; // This table refresh only occurs at start of web app
+            UserDao userDao = (UserDao) context.getBean("userDao");
+            EventDao eventDao = (EventDao) context.getBean("eventDao");
+            try {
+                try {
+                    userDao.dropUserTable();
+                } catch (Exception e) {
+                    System.out.println("There is no user table to drop");
+                }
+                userDao.createUserTable();
+                if (debug) System.out.println("User table cleared");
+                try {
+                    eventDao.dropEventTable();
+                } catch (Exception e) {
+                    System.out.println("There is no Event table to drop");
+                }
+                eventDao.createEventTable();
+                if (debug) System.out.println("Event table cleared");
+            } catch (CannotGetJdbcConnectionException e) {
+                e.printStackTrace();
+                System.out.println("Database connection could not be established");
+                request.getRequestDispatcher("/WEB-INF/jsp/view/databaseError.jsp")
+                        .forward(request, response);
+            }
+        }
+
         String action = request.getParameter("action");
         if(action == null)
             action = "goHome";
@@ -117,7 +145,10 @@ public class HomeServlet extends HttpServlet
     private void logout(HttpServletRequest request,HttpServletResponse response)
             throws ServletException, IOException
     {
-
+        if (request.getSession().getAttribute("username") == null) {
+            response.sendRedirect("home");
+            return;
+        }
         HttpSession session = request.getSession(false);
         session.invalidate();//to invalidate the session
         request.getRequestDispatcher("/WEB-INF/jsp/view/logout.jsp")

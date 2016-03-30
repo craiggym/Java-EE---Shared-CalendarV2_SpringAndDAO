@@ -65,18 +65,16 @@
         Description: <%= eventDesc %> <br/>
         Creator: <%= eventAuthor %> <br/><br/>
 
-        <%    if(session.getAttribute("username") !=null &&
-         eventDao.hasEvent(eventName,session.getAttribute("username").toString())==false){%>
+        <%    if(session.getAttribute("username") !=null)
+                if(eventDao.hasEvent(eventName,session.getAttribute("username").toString())==false){%>
         <form action="event?action=likedEvent" method="POST">
             <input type="hidden" name="it" value="<%= counter %>"/>
             <input type="submit" value="Like">
         </form>
 
             <%
-            counter++;%><br/>
-            <%
-            }
-        }
+            }counter++;%><br/>
+        <%}
     }
 %>
 

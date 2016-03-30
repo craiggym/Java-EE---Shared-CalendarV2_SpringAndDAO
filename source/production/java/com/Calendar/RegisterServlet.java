@@ -145,8 +145,8 @@ public class RegisterServlet extends HttpServlet {
                               HttpServletResponse response)
             throws ServletException, IOException
     {
-        // Fresh instance of web application. Clear out the data and re-establish tables //
-        if (idCount == 0) {
+
+     /*   if (idCount == 0) {
             UserDao userDao = (UserDao) context.getBean("userDao");
             EventDao eventDao = (EventDao) context.getBean("eventDao");
             try {
@@ -157,6 +157,13 @@ public class RegisterServlet extends HttpServlet {
                 }
                 userDao.createUserTable();
                 if (debug) System.out.println("User table cleared");
+                try {
+                    eventDao.dropEventTable();
+                } catch (Exception e) {
+                    System.out.println("There is no Event table to drop");
+                }
+                eventDao.createEventTable();
+                if (debug) System.out.println("Event table cleared");
             }
             catch(CannotGetJdbcConnectionException e){
                 e.printStackTrace();
@@ -164,7 +171,7 @@ public class RegisterServlet extends HttpServlet {
                 request.getRequestDispatcher("/WEB-INF/jsp/view/databaseError.jsp")
                         .forward(request, response);
             }
-        }
+        }*/
         // End procedure of clearing data //
         request.getSession().setAttribute("passBlank", "null");
         request.getSession().setAttribute("unameEmpty", "null");

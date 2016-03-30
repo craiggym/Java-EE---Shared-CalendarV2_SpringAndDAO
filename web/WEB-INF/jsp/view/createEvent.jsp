@@ -1,5 +1,9 @@
+<%@ page import="org.springframework.context.support.ClassPathXmlApplicationContext" %>
+<%@ page import="org.springframework.context.ConfigurableApplicationContext" %>
 <!DOCTYPE HTML>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<% String appContextFile = "AppContext.xml"; // Use the settings from this xml file %>
+<% ConfigurableApplicationContext context = new ClassPathXmlApplicationContext("AppContext.xml"); %>
 <html>
 <head>
     <title>Register</title>
@@ -13,6 +17,12 @@
     <fieldset>
         <legend><em>Event Details</em></legend><br/>
         <label>Event name: </label><span> <input type="text" name="eventName"></span>
+        <%-- No null titles --%>
+        <% if(session.getAttribute("titleEmpty").toString() == "true") %>
+        <span style="color: darkred;font-style: italic"><strong>Title of event cannot be empty!</strong></span>
+        <%--No duplicate titles --%>
+        <% if(session.getAttribute("titleDuplicate").toString() == "true") %>
+        <span style="color: darkred;font-style: italic"><strong>You're following an event with this name!</strong></span>
         <br/><br/>
         <label>Event Date: </label>
         <select name="month">

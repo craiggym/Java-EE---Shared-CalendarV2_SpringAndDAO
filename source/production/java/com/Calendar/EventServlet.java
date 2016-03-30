@@ -98,6 +98,8 @@ public class EventServlet extends HttpServlet {
     private void createEventPage(HttpServletRequest request,HttpServletResponse response)
         throws ServletException, IOException
         {
+            request.getSession().setAttribute("titleEmpty","null");
+            request.getSession().setAttribute("titleDuplicate","null");
             request.getRequestDispatcher("/WEB-INF/jsp/view/createEvent.jsp")//to create an event
                     .forward(request, response);
         }
@@ -130,6 +132,14 @@ public class EventServlet extends HttpServlet {
         parser = string.split("_");
         String parsedYear = parser[1];
 
+        if(eventName == "")
+        {
+            session.setAttribute("titleEmpty", "true");
+            request.getRequestDispatcher("/WEB-INF/jsp/view/createEvent.jsp")//to create an event
+                    .forward(request, response);
+            return;
+        }else session.setAttribute("titleEmpty","false");
+
         // Result:
         String eventDate =  parsedMonth + "-" + parsedDate + "-" + parsedYear;
         Date eventDateFormatted = new Date();
@@ -144,6 +154,15 @@ public class EventServlet extends HttpServlet {
 
         // Access database to add event
         EventDao eventDao = (EventDao) context.getBean("eventDao");
+
+        if(eventDao.hasEvent(eventName,username)) // No duplicate titles
+        {
+            session.setAttribute("titleDuplicate", "true");
+            request.getRequestDispatcher("/WEB-INF/jsp/view/createEvent.jsp")//to create an event
+                    .forward(request, response);
+            return;
+        }else session.setAttribute("titleDuplicate","false");
+
         eventDao.insertEvent(createdNewEvent);
 
         request.getRequestDispatcher("/WEB-INF/jsp/view/userPersonal.jsp")//User's Home page
@@ -194,22 +213,9 @@ public class EventServlet extends HttpServlet {
      * @throws IOException
      ********************************************************/
     private void userHome(HttpServletRequest request,HttpServletResponse response)
-            throws ServletException, IOException
-         {
-             HttpSession session = request.getSession(false);
-             EventDao eventDao = (EventDao) context.getBean("eventDao");
-             // Fresh instance of web application. Clear out the data and re-establish tables //
-             if(id == 0) {
-                 try {
-                     eventDao.dropEventTable();
-                 } catch (Exception e) {
-                     System.out.println("There is no Event table to drop");
-                 }
-                 eventDao.createEventTable();
-                 if (debug) System.out.println("Event table cleared");
-             }
+            throws ServletException, IOException {
 
         request.getRequestDispatcher("/WEB-INF/jsp/view/userPersonal.jsp")//User's Home page
                 .forward(request, response);
-        }
+    }
 }
