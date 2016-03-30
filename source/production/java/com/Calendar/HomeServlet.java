@@ -7,15 +7,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.*;
 //Added for proj 2//
 import com.DAO.EventDao;
 import com.DAO.UserDao;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
 
 @WebServlet(
@@ -27,8 +24,7 @@ public class HomeServlet extends HttpServlet
     // Variables //
     boolean debug = true;
     private static boolean freshInstance = true;
-    private static String appContextFile = "AppContext.xml"; // Use the settings from this xml file
-    private static ConfigurableApplicationContext context = new ClassPathXmlApplicationContext("AppContext.xml");
+    private static ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("AppContext.xml");
 
     /*****************************************************
      * doPost Method

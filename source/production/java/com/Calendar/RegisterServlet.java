@@ -1,6 +1,5 @@
 package com.Calendar;
 
-import com.DAO.EventDao;
 import com.DAO.UserDao;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -25,8 +24,7 @@ public class RegisterServlet extends HttpServlet {
     // Variables //
     int idCount=0;
     boolean debug=true;
-    private static String appContextFile = "AppContext.xml"; // Use the settings from this xml file
-    private static ConfigurableApplicationContext context = new ClassPathXmlApplicationContext("AppContext.xml");
+    private static ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("AppContext.xml");
 
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -66,7 +64,7 @@ public class RegisterServlet extends HttpServlet {
     private void addUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        ConfigurableApplicationContext context = new ClassPathXmlApplicationContext(appContextFile); // New AppContext pointing to xml config
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("AppContext.xml"); // New AppContext pointing to xml config
         UserDao userDao = (UserDao) context.getBean("userDao");
         HttpSession session = request.getSession(true);
 

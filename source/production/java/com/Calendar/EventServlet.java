@@ -1,8 +1,6 @@
 package com.Calendar;
 
 import com.DAO.EventDao;
-import com.sun.org.apache.xpath.internal.SourceTree;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -23,7 +21,7 @@ import java.util.*;
 public class EventServlet extends HttpServlet {
     public static Calendar date = Calendar.getInstance();
     int id=0;
-    private static ConfigurableApplicationContext context = new ClassPathXmlApplicationContext("AppContext.xml");
+    private static ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("AppContext.xml");
     private static boolean debug = true;
     /************************************
      * doPost

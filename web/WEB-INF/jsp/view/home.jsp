@@ -7,8 +7,8 @@
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<% String appContextFile = "AppContext.xml"; // Use the settings from this xml file %>
-<% ConfigurableApplicationContext context = new ClassPathXmlApplicationContext("AppContext.xml"); %>
+<% String appContextFile = "WEB-INF/AppContext.xml"; // Use the settings from this xml file %>
+<% ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("AppContext.xml"); %>
 <!DOCTYPE html>
 <html>
     <head>

@@ -1,8 +1,6 @@
 package com.DAO;
 
 import com.Calendar.Event;
-import com.Calendar.User;
-
 import java.util.List;
 
 public interface EventDao {

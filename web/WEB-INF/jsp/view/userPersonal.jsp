@@ -11,7 +11,7 @@
 <%@ page import="java.util.Date" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.util.Calendar" %>
-<% String appContextFile = "AppContext.xml"; // Use the settings from this xml file %>
+<% String appContextFile = "WEB-INF/AppContext.xml"; // Use the settings from this xml file %>
 <% ConfigurableApplicationContext context = new ClassPathXmlApplicationContext("AppContext.xml"); %>
 
 
@@ -33,7 +33,7 @@
 
     Date todays_date = new Date();
     Calendar cal = Calendar.getInstance();
-    cal.add(Calendar.MONTH,1);
+    cal.add(Calendar.MONTH,3);
     Date beyond_date = cal.getTime();
 
     if (eventDao.eventsExists(session.getAttribute("username").toString()) == false) {%>
@@ -41,7 +41,7 @@
 <p><em>Create one or follow one from the Home page!</em>
 <p></p>
 <%
-    } else { %> <em style="color: gray;"><strong>Showing events up to 3 months from today</strong></em><br/> <%
+    } else { %> <em style="color: gray;"><strong>Showing events up to 3 months from today </strong></em><br/> <%
         List<Event> events = eventDao.selectAllEvent(session.getAttribute("username").toString());
         for (Event e : events) {
             int eventId = e.getId();

@@ -2,8 +2,8 @@
 <%@ page import="org.springframework.context.ConfigurableApplicationContext" %>
 <!DOCTYPE HTML>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<% String appContextFile = "AppContext.xml"; // Use the settings from this xml file %>
-<% ConfigurableApplicationContext context = new ClassPathXmlApplicationContext("AppContext.xml"); %>
+<% String appContextFile = "WEB-INF/AppContext.xml"; // Use the settings from this xml file %>
+<% ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("AppContext.xml"); %>
 <html>
 <head>
     <title>Register</title>
